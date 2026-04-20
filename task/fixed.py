@@ -5,13 +5,21 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
- 
+# testing:
+# use pytest
+# tmp/*.log
+# pytest.raises for exceptions
+# dont worry about time time or uuids being accurate. 
+# dont worry about interactions (ie internal function calls)
+# inputs/outputs, return values, raised errors, written files. 
+# try for 10/10 score on pylint! 
+
 OUTPUT_FILE = Path("logs") / "audit.log"
 SYSTEM_NAME = "auth_service"
 USER_ID_RE = re.compile(r"^user-\d+$")
 KNOWN_USERS = {"user-100", "user-200", "user-300"}
 
- 
+# test outputs a string, ends with z, stretch: regex for basic shape (2026-04-16T11:17:54Z). 
 def format_timestamp_utc_z() -> str:
     """UTC timestamp as an ISO-8601 string with Z (Zulu time)."""
     return (
@@ -20,7 +28,8 @@ def format_timestamp_utc_z() -> str:
         .isoformat()
         .replace("+00:00", "Z")
     )
- 
+
+# optioanl: test the data shape 
 def default_attempts() -> list[tuple[str, bool]]:
     return [
         ("user-100", True),
@@ -28,7 +37,8 @@ def default_attempts() -> list[tuple[str, bool]]:
         ("user-100", False),
         ("user-999", True),
     ]
- 
+
+# test raise valueerror, convert string bools to bools, valid input + strips whitespace. 
 def parse_attempt_line(raw: str, line_no: int) -> tuple[str, bool]:
     parts = [p.strip() for p in raw.split(",")]
 
@@ -56,6 +66,8 @@ def parse_attempt_line(raw: str, line_no: int) -> tuple[str, bool]:
 
     return user_id, (v == "true")
 
+# test default is called correctly. reads file correctly, ignores lines with #, 
+# test the value and runtime errors
 def load_attempts(input_path: Path | None) -> list[tuple[str, bool]]:
     """
     If --input is provided, read attempts from file.
@@ -87,6 +99,7 @@ def load_attempts(input_path: Path | None) -> list[tuple[str, bool]]:
 
     return attempts
  
+# test it contains the right fields + the input args remain the same)  
 def build_event_line(user_id: str, success: bool, known: bool) -> str:
     ts = format_timestamp_utc_z()  # per-event timestamp
     outcome = "success" if success else "failure"
@@ -96,7 +109,8 @@ def build_event_line(user_id: str, success: bool, known: bool) -> str:
         f"event_id={event_id} time={ts} system={SYSTEM_NAME} user_id={user_id} "
         f"user_status={user_status} outcome={outcome}"
     )
- 
+
+# test for folder created, appends on 2nd call rather than overwrite. 
 def write_lines_append_only(path: Path, lines: list[str]) -> None:
     # Append-only + context manager
     try:
@@ -126,7 +140,8 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Optional output file path"
     )
     return parser.parse_args(argv)
- 
+
+# happy path returns 0, invalid input returns 2, missing file returns 3.
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
 
