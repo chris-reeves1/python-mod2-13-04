@@ -1,9 +1,17 @@
-set up db - 
-make a table
-have id, password, rating 
+import sqlite3
 
-conn.close()
+def setup():
+    conn = sqlite3.connect("passwords.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY,  
+        password TEXT,
+        rating TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
 
-have a run guard.
-
-run once manually. 
+if __name__ == "__main__":
+    setup()
