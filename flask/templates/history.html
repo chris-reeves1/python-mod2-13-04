@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password history</title>
+</head>
+<body>
+    <h1>Passord history</h1>
+    <table border="1">
+        <tr>
+            <th>Password</th>
+            <th>Rating</th>
+        </tr>
+        {% for password, rating in history %}
+        <tr>
+            <td>{{ password }}</td>
+            <td>{{ rating }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/">home</a>
+</body>
+</html>
